@@ -111,7 +111,11 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        items[indexPath.row].done = !items[indexPath.row].done
+        
+        context.delete(items[indexPath.row])
+        items.remove(at:indexPath.row)
+        
+       // items[indexPath.row].done = !items[indexPath.row].done
         
         saveData()
         
