@@ -7,14 +7,104 @@
 //
 
 import UIKit
+import CoreData
+class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource {
 
-class ViewController: UIViewController {
-
+   
+    var items = [Item]()
+    
+    @IBOutlet weak var tables: UITableView!
+    
+    var context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    
     override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
+           super.viewDidLoad()
+        
+        loadData()
+        
+        print(try! FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+          
+       }
+    
+    @IBAction func addItem(_ sender: UIBarButtonItem) {
+        
+        var textField = UITextField()
+        
+        var alert = UIAlertController(title: "Add Item", message: "Enter Name", preferredStyle: .alert)
+        
+        var action = UIAlertAction(title: "Ok", style: .default) { (action) in
+            
+            
+            let item = Item(context:self.context)
+            
+            item.title = textField.text
+            
+            self.items.append(item)
+                
+            self.saveData()
+            
+            }
+        
+        alert.addTextField { (alerttext) in
+            
+        alerttext.placeholder = "enter Item Name"
+            
+        textField = alerttext
+            
+    }
+       
+        alert.addAction(action)
+        
+       present(alert, animated: true, completion: nil)
+    }
+    
+    //save data
+    func saveData()
+    {
+        do{
+            
+            try context.save() //only one method to save data
+          }
+        catch
+        {
+          print("error to save \(error)")
+        }
+        
+        tables.reloadData()
+    }
+    
+    //read data from coreData Model
+    func loadData()
+    {
+        do
+        {
+            
+            //Item is Entity 
+            
+            let request : NSFetchRequest<Item> = Item.fetchRequest()
+            
+            items =  try context.fetch(request)
+            
+        }
+        catch
+        {
+            print("cannot load data from CoreDataModel \(error)")
+            
+        }
+        tables.reloadData()
     }
 
-
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return items.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tables.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        
+        cell.textLabel?.text = items[indexPath.row].title
+        
+        return cell
+    }
 }
 
