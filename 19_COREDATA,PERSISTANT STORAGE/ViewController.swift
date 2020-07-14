@@ -79,7 +79,7 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         do
         {
             
-            //Item is Entity 
+            //Item is Entity
             
             let request : NSFetchRequest<Item> = Item.fetchRequest()
             
@@ -104,7 +104,18 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         
         cell.textLabel?.text = items[indexPath.row].title
         
+        cell.accessoryType = items[indexPath.row].done ? .checkmark : .none
+        
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        items[indexPath.row].done = !items[indexPath.row].done
+        
+        saveData()
+        
+        tables.deselectRow(at: indexPath, animated: true)
     }
 }
 
